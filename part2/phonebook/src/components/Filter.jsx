@@ -8,11 +8,12 @@ const Filter = ({ persons, searchName, setSearchName }) => {
   const findPerson = persons.find(
     (item) => item.name.toLowerCase().indexOf(searchName.toLowerCase()) !== -1,
   );
+
   return (
     <div>
       filter shown with:
       <input value={searchName} onChange={handleSearchName} />
-      {findPerson ? findPerson.name : ''}
+      {searchName !== '' && findPerson ? findPerson.name : ''}
     </div>
   );
 };

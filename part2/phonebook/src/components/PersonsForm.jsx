@@ -1,5 +1,7 @@
 import React from 'react';
 
+import phonebook from '../services/phonebook';
+
 const PersonsForm = ({
   newName,
   setNewName,
@@ -23,14 +25,33 @@ const PersonsForm = ({
         JSON.stringify(newName.toLowerCase()),
     );
     if (found) {
-      alert(`${newName} is already added to phonebook`);
+      if (
+        window.confirm(
+          `${newName} is already added to phonebook, replace de old number with a new one?`,
+        )
+      ) {
+        const person = persons.find((person) => found.id === person.id);
+        const changedNumber = { ...person, number: newNumber };
+
+        phonebook.update(person.id, changedNumber).then((returnedContact) => {
+          setPersons(
+            persons.map((item) =>
+              item.id !== person.id ? item : returnedContact,
+            ),
+          );
+        });
+      }
       setNewName('');
       setNewNumber('');
       return;
     }
 
     // concat to preserver imutability of component
-    setPersons(persons.concat(personObject));
+    phonebook
+      .create(personObject)
+      .then((returnedPhonebook) =>
+        setPersons(persons.concat(returnedPhonebook)),
+      );
     // reset of input field.
     setNewName('');
     setNewNumber('');
