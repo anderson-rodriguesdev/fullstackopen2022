@@ -1,7 +1,19 @@
-const { request, response } = require('express');
 const express = require('express');
+const morgan = require('morgan');
+
 const app = express();
+
 app.use(express.json());
+
+app.use(
+  morgan(
+    ':method :url :status :res[content-length] - :response-time ms | :post',
+  ),
+);
+
+morgan.token('post', (request, response) => {
+  return JSON.stringify(request.body);
+});
 
 let persons = [
   {
@@ -34,6 +46,7 @@ const generateId = () => {
 app.get('/api/all', (request, response) => {
   response.json(persons);
 });
+
 app.get('/info', (request, response) => {
   response.send(
     `<p>Phonebook has info for ${persons.length} people</><br> ${new Date()}`,
