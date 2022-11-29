@@ -1,9 +1,12 @@
 const express = require('express');
+const cors = require('cors');
 const morgan = require('morgan');
 
 const app = express();
 
 app.use(express.json());
+
+app.use(cors());
 
 app.use(
   morgan(
@@ -43,7 +46,7 @@ const generateId = () => {
   return maxId + 1;
 };
 
-app.get('/api/all', (request, response) => {
+app.get('/api/persons', (request, response) => {
   response.json(persons);
 });
 
@@ -70,7 +73,7 @@ app.post('/api/persons', (request, response) => {
     (person) => person.name.toLowerCase() === body.name.toLowerCase(),
   );
 
-  if (!body.name || !body.phone) {
+  if (!body.name || !body.number) {
     return response
       .status(400)
       .json({ error: 'The name or number is missing' });
@@ -81,11 +84,10 @@ app.post('/api/persons', (request, response) => {
   const person = {
     id: generateId(),
     name: body.name,
-    phone: body.phone,
+    number: body.number,
   };
 
   persons = persons.concat(person);
-
   response.json(person);
 });
 
@@ -96,7 +98,7 @@ app.delete('/api/persons/:id', (request, response) => {
   response.status(204).end();
 });
 
-const PORT = 3005;
+const PORT = process.env.PORT || 3005;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
